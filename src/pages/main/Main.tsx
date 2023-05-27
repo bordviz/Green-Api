@@ -5,7 +5,7 @@ import ChatMenuCard from './components/ChatMenuCard';
 import { ChatType, chats } from '../../redux/slices/chatsSclice';
 import { useSelector } from 'react-redux';
 import Chat from './components/Chat';
-// import { login } from '../../redux/slices/loginSlice';
+import { login } from '../../redux/slices/loginSlice';
 import { getMessage } from '../../api/getMessage';
 import { MessageModel } from '../../api/models/messageModel';
 import { useActions } from '../../redux/hooks/useActions';
@@ -16,16 +16,14 @@ import { getTime } from '../../api/sendMessage';
 const Main:FC = () => {
     const [phoneMenu, toggleMenu] = useState(false);
     const [activeChat, changeChat] = useState<ChatType | null>(null);
-    // const loginDate = useSelector(login);
+    const loginDate = useSelector(login);
     
     const chatList = useSelector(chats);
     const {addMessage} = useActions();
 
     const getData = async() => {
         while(true){
-            const id= '1101824043'
-            const token = 'c4e59c94a6ef4b2fb2b7cff3cdba294ccc7b3839a3434d9fbb'
-            const message:MessageModel | undefined = await getMessage(id, token);
+            const message:MessageModel | undefined = await getMessage(loginDate.id, loginDate.token);
             if(message !== null){
                 const time = getTime();
                 const chat = message?.body.senderData.chatId.slice(0, message?.body.senderData.chatId.length-5);
@@ -39,7 +37,7 @@ const Main:FC = () => {
                 if(text !== ''){
                     addMessage({time: time, chat: chat, myMessage: false, text: text});
                 }
-                await deleteMessage(id, token, recipeId!);
+                await deleteMessage(loginDate.id, loginDate.token, recipeId!);
             }
         }
         
